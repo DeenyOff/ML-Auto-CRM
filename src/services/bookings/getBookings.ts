@@ -17,7 +17,6 @@ type CarRelation = {
 type EmployeeRelation = {
   id: string | null;
   full_name: string | null;
-  email: string | null;
 } | null;
 
 type BookingServiceRow = {
@@ -80,14 +79,13 @@ export type CreateBookingInput = {
 type ProfileRow = {
   id: string;
   full_name: string | null;
-  email: string | null;
 };
 
 const bookingSelect = `
   *,
   client:clients(id, full_name),
   car:cars(id, brand, model, vin, plate_number),
-  assignedEmployee:profiles!bookings_assigned_employee_id_fkey(id, full_name, email),
+  assignedEmployee:profiles!bookings_assigned_employee_id_fkey(id, full_name),
   booking_services(price, notes, service:services(name, base_price))
 `;
 
@@ -152,7 +150,7 @@ function mapBookingRow(row: BookingRow): Booking {
     plateNumber: row.car?.plate_number ?? "Not recorded",
     service: service?.name ?? "Service not assigned",
     assignedEmployee:
-      row.assignedEmployee?.full_name ?? row.assignedEmployee?.email ?? "Unassigned",
+      row.assignedEmployee?.full_name ?? "Unassigned",
     date: row.scheduled_date ?? row.updated_at ?? row.created_at ?? new Date(0).toISOString(),
     price: row.price ?? primaryService?.price ?? service?.base_price ?? 0,
     status: normalizeStatus(row.status),
@@ -191,7 +189,7 @@ export async function getBooking(id: string): Promise<Booking | null> {
 export async function getBookingEmployees(): Promise<BookingEmployeeOption[]> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, email")
+    .select("id, full_name")
     .order("full_name", { ascending: true, nullsFirst: false });
 
   if (error) {
@@ -203,7 +201,7 @@ export async function getBookingEmployees(): Promise<BookingEmployeeOption[]> {
 
     return {
       id: row.id,
-      name: row.full_name ?? row.email ?? "Unnamed employee",
+      name: row.full_name ?? "Unnamed employee",
     };
   });
 }
