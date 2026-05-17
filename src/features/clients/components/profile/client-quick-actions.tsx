@@ -11,25 +11,68 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { BookingForm } from "@/features/bookings/components/booking-form";
 import { VehicleForm } from "@/features/cars/components/vehicle-form";
 import type { ClientProfile } from "@/features/clients/types/client";
+import {
+  createBooking,
+  type BookingEmployeeOption,
+  type CreateBookingInput,
+} from "@/services/bookings/getBookings";
 import { createCar, type CreateCarInput } from "@/services/cars/getCars";
 
 const actions = ["Add booking", "Add note", "Add car", "Upload photo"];
 
 type ClientQuickActionsProps = {
   client: ClientProfile;
+  employees: BookingEmployeeOption[];
 };
 
-export function ClientQuickActions({ client }: ClientQuickActionsProps) {
+export function ClientQuickActions({ client, employees }: ClientQuickActionsProps) {
   const router = useRouter();
+  const [isAddBookingOpen, setIsAddBookingOpen] = useState(false);
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
+  const [isCreatingBooking, setIsCreatingBooking] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
+  const vehicles = client.vehicles.map((vehicle) => ({
+    id: vehicle.id,
+    clientId: client.id,
+    name: `${vehicle.brand} ${vehicle.model}`,
+    plateNumber: vehicle.plateNumber,
+  }));
+
+  function handleAddBookingOpenChange(open: boolean) {
+    setIsAddBookingOpen(open);
+    setBookingError(null);
+  }
 
   function handleAddVehicleOpenChange(open: boolean) {
     setIsAddVehicleOpen(open);
     setCreateError(null);
+  }
+
+  async function handleCreateBooking(values: CreateBookingInput) {
+    setIsCreatingBooking(true);
+    setBookingError(null);
+
+    try {
+      await createBooking({
+        ...values,
+        client_id: client.id,
+      });
+      handleAddBookingOpenChange(false);
+      router.refresh();
+    } catch (error) {
+      setBookingError(
+        error instanceof Error
+          ? error.message
+          : "Unable to create booking. Please try again.",
+      );
+    } finally {
+      setIsCreatingBooking(false);
+    }
   }
 
   async function handleCreateVehicle(values: CreateCarInput) {
@@ -63,7 +106,9 @@ export function ClientQuickActions({ client }: ClientQuickActionsProps) {
             variant={index === 0 ? "default" : "outline"}
             className="h-12 justify-start"
             onClick={
-              action === "Add car"
+              action === "Add booking"
+                ? () => handleAddBookingOpenChange(true)
+                : action === "Add car"
                 ? () => handleAddVehicleOpenChange(true)
                 : undefined
             }
@@ -75,6 +120,28 @@ export function ClientQuickActions({ client }: ClientQuickActionsProps) {
           </Button>
         ))}
       </div>
+
+      <Dialog open={isAddBookingOpen} onOpenChange={handleAddBookingOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Booking</DialogTitle>
+            <DialogDescription>
+              Create a new service booking for {client.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <BookingForm
+            clients={[client]}
+            defaultCarId={vehicles[0]?.id ?? ""}
+            defaultClientId={client.id}
+            employees={employees}
+            error={bookingError}
+            isSubmitting={isCreatingBooking}
+            onCancel={() => handleAddBookingOpenChange(false)}
+            onSubmit={handleCreateBooking}
+            vehicles={vehicles}
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isAddVehicleOpen} onOpenChange={handleAddVehicleOpenChange}>
         <DialogContent>

@@ -50,6 +50,39 @@ type BookingRow = {
   booking_services?: BookingServiceRow[] | null;
 };
 
+export type BookingClientOption = {
+  id: string;
+  name: string;
+};
+
+export type BookingVehicleOption = {
+  id: string;
+  clientId: string;
+  name: string;
+  plateNumber: string;
+};
+
+export type BookingEmployeeOption = {
+  id: string;
+  name: string;
+};
+
+export type CreateBookingInput = {
+  client_id: string;
+  car_id: string;
+  assigned_employee_id: string;
+  scheduled_date: string;
+  status: BookingStatus;
+  price: number;
+  notes?: string | null;
+};
+
+type ProfileRow = {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+};
+
 const bookingSelect = `
   *,
   client:clients(id, full_name),
@@ -153,4 +186,46 @@ export async function getBooking(id: string): Promise<Booking | null> {
   }
 
   return data ? mapBookingRow(data as BookingRow) : null;
+}
+
+export async function getBookingEmployees(): Promise<BookingEmployeeOption[]> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, email")
+    .order("full_name", { ascending: true, nullsFirst: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []).map((profile) => {
+    const row = profile as ProfileRow;
+
+    return {
+      id: row.id,
+      name: row.full_name ?? row.email ?? "Unnamed employee",
+    };
+  });
+}
+
+export async function createBooking(input: CreateBookingInput): Promise<Booking> {
+  const { data, error } = await supabase
+    .from("bookings")
+    .insert({
+      client_id: input.client_id,
+      car_id: input.car_id,
+      assigned_employee_id: input.assigned_employee_id,
+      scheduled_date: new Date(input.scheduled_date).toISOString(),
+      status: input.status,
+      price: input.price,
+      notes: input.notes || null,
+    })
+    .select(bookingSelect)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return mapBookingRow(data as BookingRow);
 }

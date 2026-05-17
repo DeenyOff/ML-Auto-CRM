@@ -1,11 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { DataTable } from "@/components/table/data-table";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { BookingForm } from "@/features/bookings/components/booking-form";
 import { BookingMobileCard } from "@/features/bookings/components/booking-mobile-card";
 import {
   type BookingDateFilter,
@@ -13,6 +23,13 @@ import {
   useBookingsTable,
 } from "@/features/bookings/hooks/use-bookings-table";
 import type { Booking } from "@/features/bookings/types/booking";
+import {
+  createBooking,
+  type BookingClientOption,
+  type BookingEmployeeOption,
+  type BookingVehicleOption,
+  type CreateBookingInput,
+} from "@/services/bookings/getBookings";
 
 const statuses: BookingStatusFilter[] = [
   "all",
@@ -37,10 +54,21 @@ const dateFilters: Array<{
 
 type BookingsPageProps = {
   bookings: Booking[];
+  clients: BookingClientOption[];
+  employees: BookingEmployeeOption[];
+  vehicles: BookingVehicleOption[];
 };
 
-export function BookingsPage({ bookings }: BookingsPageProps) {
+export function BookingsPage({
+  bookings,
+  clients,
+  employees: employeeOptions,
+  vehicles,
+}: BookingsPageProps) {
   const router = useRouter();
+  const [isAddBookingOpen, setIsAddBookingOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const {
     table,
     globalFilter,
@@ -58,6 +86,30 @@ export function BookingsPage({ bookings }: BookingsPageProps) {
     (booking) =>
       !["Delivered", "Completed", "Cancelled"].includes(booking.status),
   ).length;
+
+  function handleAddBookingOpenChange(open: boolean) {
+    setIsAddBookingOpen(open);
+    setCreateError(null);
+  }
+
+  async function handleCreateBooking(values: CreateBookingInput) {
+    setIsCreating(true);
+    setCreateError(null);
+
+    try {
+      await createBooking(values);
+      handleAddBookingOpenChange(false);
+      router.refresh();
+    } catch (error) {
+      setCreateError(
+        error instanceof Error
+          ? error.message
+          : "Unable to create booking. Please try again.",
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  }
 
   return (
     <AppShell title="Bookings" eyebrow="Service Jobs">
@@ -97,13 +149,18 @@ export function BookingsPage({ bookings }: BookingsPageProps) {
 
         <Card>
           <CardHeader className="gap-4">
-            <div>
-              <CardTitle className="text-base text-white">
-                Booking Directory
-              </CardTitle>
-              <p className="mt-1 text-sm text-zinc-500">
-                Click a row to open booking details.
-              </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle className="text-base text-white">
+                  Booking Directory
+                </CardTitle>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Click a row to open booking details.
+                </p>
+              </div>
+              <Button onClick={() => handleAddBookingOpenChange(true)}>
+                Add Booking
+              </Button>
             </div>
             <div className="grid gap-3 xl:grid-cols-[1fr_160px_150px_190px]">
               <Input
@@ -173,6 +230,25 @@ export function BookingsPage({ bookings }: BookingsPageProps) {
           </CardContent>
         </Card>
       </div>
+      <Dialog open={isAddBookingOpen} onOpenChange={handleAddBookingOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Booking</DialogTitle>
+            <DialogDescription>
+              Create a new ML Auto service booking.
+            </DialogDescription>
+          </DialogHeader>
+          <BookingForm
+            clients={clients}
+            employees={employeeOptions}
+            error={createError}
+            isSubmitting={isCreating}
+            onCancel={() => handleAddBookingOpenChange(false)}
+            onSubmit={handleCreateBooking}
+            vehicles={vehicles}
+          />
+        </DialogContent>
+      </Dialog>
     </AppShell>
   );
 }

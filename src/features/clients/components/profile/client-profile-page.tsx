@@ -6,12 +6,14 @@ import { ClientProfileHeader } from "@/features/clients/components/profile/clien
 import { ClientProfileTabs } from "@/features/clients/components/profile/client-profile-tabs";
 import { ClientQuickActions } from "@/features/clients/components/profile/client-quick-actions";
 import type { ClientProfile } from "@/features/clients/types/client";
+import type { BookingEmployeeOption } from "@/services/bookings/getBookings";
 
 type ClientProfilePageProps = {
   client: ClientProfile;
+  employees: BookingEmployeeOption[];
 };
 
-export function ClientProfilePage({ client }: ClientProfilePageProps) {
+export function ClientProfilePage({ client, employees }: ClientProfilePageProps) {
   return (
     <AppShell title={client.name} eyebrow="Client Profile">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
@@ -27,7 +29,7 @@ export function ClientProfilePage({ client }: ClientProfilePageProps) {
         </div>
 
         <ClientProfileHeader client={client} />
-        <ClientQuickActions client={client} />
+        <ClientQuickActions client={client} employees={employees} />
         <ClientProfileTabs client={client} />
       </div>
     </AppShell>
