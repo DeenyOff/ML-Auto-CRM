@@ -16,22 +16,12 @@ import type {
   CreateBookingInput,
 } from "@/services/bookings/getBookings";
 
-const statuses: BookingStatus[] = [
-  "New",
-  "Confirmed",
-  "In Progress",
-  "Waiting",
-  "Completed",
-  "Delivered",
-  "Cancelled",
-];
-
 const bookingFormSchema = z.object({
   client_id: z.string().trim().min(1, "Client is required."),
   car_id: z.string().trim().min(1, "Vehicle is required."),
   assigned_employee_id: z.string().trim().min(1, "Employee is required."),
   scheduled_date: z.string().trim().min(1, "Scheduled date is required."),
-  status: z.enum(statuses),
+  status: z.enum(["new", "in_progress", "completed", "cancelled"]),
   price: z.coerce.number().min(0, "Price cannot be negative."),
   notes: z.string().trim().optional().or(z.literal("")),
 });
@@ -82,7 +72,7 @@ export function BookingForm({
       car_id: defaultCarId,
       assigned_employee_id: "",
       scheduled_date: "",
-      status: "New",
+      status: "new",
       price: 0,
       notes: "",
     },
@@ -186,23 +176,6 @@ export function BookingForm({
                 : "Add an employee profile before creating a booking."
             }
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-zinc-200" htmlFor="status">
-            Status
-          </label>
-          <select
-            id="status"
-            disabled={isSubmitting}
-            className="h-10 w-full rounded-lg border border-white/10 bg-[#111] px-3 text-sm text-white outline-none transition-colors focus:border-red-500/60 focus:ring-2 focus:ring-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-            {...register("status")}
-          >
-            {statuses.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 
