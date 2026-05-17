@@ -30,6 +30,17 @@ type CarRow = {
   clients?: ClientRelation;
 };
 
+export type CreateCarInput = {
+  brand: string;
+  model: string;
+  year: number;
+  vin: string;
+  plate_number: string;
+  color: string;
+  mileage: number;
+  client_id: string;
+};
+
 function normalizeStatus(status: string | null): CarServiceStatus {
   const value = status?.toLowerCase() ?? "";
 
@@ -99,4 +110,28 @@ export async function getCar(id: string): Promise<Car | null> {
   }
 
   return data ? mapCarRow(data as CarRow) : null;
+}
+
+export async function createCar(input: CreateCarInput): Promise<Car> {
+  const { data, error } = await supabase
+    .from("cars")
+    .insert({
+      brand: input.brand,
+      model: input.model,
+      year: input.year,
+      vin: input.vin,
+      plate_number: input.plate_number,
+      color: input.color,
+      mileage: input.mileage,
+      client_id: input.client_id,
+      status: "active",
+    })
+    .select("*, client:clients(id, full_name)")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return mapCarRow(data as CarRow);
 }
