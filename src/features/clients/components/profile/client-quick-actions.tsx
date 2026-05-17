@@ -1,22 +1,99 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { VehicleForm } from "@/features/cars/components/vehicle-form";
+import type { ClientProfile } from "@/features/clients/types/client";
+import { createCar, type CreateCarInput } from "@/services/cars/getCars";
 
 const actions = ["Add booking", "Add note", "Add car", "Upload photo"];
 
-export function ClientQuickActions() {
+type ClientQuickActionsProps = {
+  client: ClientProfile;
+};
+
+export function ClientQuickActions({ client }: ClientQuickActionsProps) {
+  const router = useRouter();
+  const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  function handleAddVehicleOpenChange(open: boolean) {
+    setIsAddVehicleOpen(open);
+    setCreateError(null);
+  }
+
+  async function handleCreateVehicle(values: CreateCarInput) {
+    setIsCreating(true);
+    setCreateError(null);
+
+    try {
+      await createCar({
+        ...values,
+        client_id: client.id,
+      });
+      handleAddVehicleOpenChange(false);
+      router.refresh();
+    } catch (error) {
+      setCreateError(
+        error instanceof Error
+          ? error.message
+          : "Unable to create vehicle. Please try again.",
+      );
+    } finally {
+      setIsCreating(false);
+    }
+  }
+
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      {actions.map((action, index) => (
-        <Button
-          key={action}
-          variant={index === 0 ? "default" : "outline"}
-          className="h-12 justify-start"
-        >
-          <span className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-black/20 text-sm">
-            +
-          </span>
-          {action}
-        </Button>
-      ))}
-    </div>
+    <>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {actions.map((action, index) => (
+          <Button
+            key={action}
+            variant={index === 0 ? "default" : "outline"}
+            className="h-12 justify-start"
+            onClick={
+              action === "Add car"
+                ? () => handleAddVehicleOpenChange(true)
+                : undefined
+            }
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-md border border-white/10 bg-black/20 text-sm">
+              +
+            </span>
+            {action}
+          </Button>
+        ))}
+      </div>
+
+      <Dialog open={isAddVehicleOpen} onOpenChange={handleAddVehicleOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Vehicle</DialogTitle>
+            <DialogDescription>
+              Create a new vehicle record for {client.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <VehicleForm
+            clients={[client]}
+            defaultClientId={client.id}
+            error={createError}
+            isSubmitting={isCreating}
+            onCancel={() => handleAddVehicleOpenChange(false)}
+            onSubmit={handleCreateVehicle}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

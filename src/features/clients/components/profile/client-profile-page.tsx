@@ -27,7 +27,7 @@ export function ClientProfilePage({ client }: ClientProfilePageProps) {
         </div>
 
         <ClientProfileHeader client={client} />
-        <ClientQuickActions />
+        <ClientQuickActions client={client} />
         <ClientProfileTabs client={client} />
       </div>
     </AppShell>

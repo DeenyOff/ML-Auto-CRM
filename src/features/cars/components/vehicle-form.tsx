@@ -33,6 +33,7 @@ type VehicleFormValues = z.output<typeof vehicleFormSchema>;
 
 type VehicleFormProps = {
   clients: Client[];
+  defaultClientId?: string;
   error?: string | null;
   isSubmitting?: boolean;
   onCancel: () => void;
@@ -49,6 +50,7 @@ function FieldError({ message }: { message?: string }) {
 
 export function VehicleForm({
   clients,
+  defaultClientId = "",
   error,
   isSubmitting = false,
   onCancel,
@@ -68,7 +70,7 @@ export function VehicleForm({
       plate_number: "",
       color: "",
       mileage: 0,
-      client_id: "",
+      client_id: defaultClientId,
     },
   });
 
