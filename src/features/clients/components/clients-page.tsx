@@ -61,29 +61,6 @@ export function ClientsPage({ clients }: ClientsPageProps) {
   return (
     <AppShell title="Clients" eyebrow="Client Management">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-red-400">
-              ML Auto database
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Clients
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm text-zinc-500">
-              Search, filter, and manage client relationships across premium
-              detailing services.
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-              Total records
-            </p>
-            <p className="mt-1 text-2xl font-semibold text-white">
-              {clients.length}
-            </p>
-          </div>
-        </section>
-
         <Card>
           <CardHeader className="gap-4">
             <div>

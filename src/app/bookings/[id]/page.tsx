@@ -9,7 +9,7 @@ import {
   dateTimeFormatter,
 } from "@/features/bookings/components/booking-formatters";
 import { BookingStatusBadge } from "@/features/bookings/components/booking-status-badge";
-import { bookings } from "@/features/bookings/data/bookings";
+import { getBooking } from "@/services/bookings/getBookings";
 
 type BookingDetailsRouteProps = {
   params: Promise<{
@@ -30,7 +30,7 @@ export default async function BookingDetailsRoute({
   params,
 }: BookingDetailsRouteProps) {
   const { id } = await params;
-  const booking = bookings.find((item) => item.id === id);
+  const booking = await getBooking(id);
 
   if (!booking) {
     notFound();

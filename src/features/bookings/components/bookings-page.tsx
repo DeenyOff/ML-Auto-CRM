@@ -7,7 +7,6 @@ import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { BookingMobileCard } from "@/features/bookings/components/booking-mobile-card";
-import { bookings } from "@/features/bookings/data/bookings";
 import {
   type BookingDateFilter,
   type BookingStatusFilter,
@@ -36,7 +35,11 @@ const dateFilters: Array<{
   { label: "Past", value: "past" },
 ];
 
-export function BookingsPage() {
+type BookingsPageProps = {
+  bookings: Booking[];
+};
+
+export function BookingsPage({ bookings }: BookingsPageProps) {
   const router = useRouter();
   const {
     table,
@@ -155,8 +158,12 @@ export function BookingsPage() {
           <CardContent className="space-y-4">
             <DataTable
               table={table}
-              emptyTitle="No bookings found"
-              emptyDescription="Adjust search or filters to find matching ML Auto service jobs."
+              emptyTitle={bookings.length ? "No bookings found" : "No bookings yet"}
+              emptyDescription={
+                bookings.length
+                  ? "Adjust search or filters to find matching ML Auto service jobs."
+                  : "Booking records from Supabase will appear here once they are added."
+              }
               getRowHref={(booking) => `/bookings/${booking.id}`}
               onRowClick={(booking) => router.push(`/bookings/${booking.id}`)}
               renderMobileCard={(booking) => (
