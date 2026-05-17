@@ -1,0 +1,81 @@
+import type { Client } from "@/features/clients/types/client";
+import { getClients } from "@/services/clients/getClients";
+
+
+const  clientss = getClients();
+
+
+export const clients: Client[] = [
+  {
+    id: "andrius-petrauskas",
+    name: "Andrius Petrauskas",
+    phone: "+370 612 44011",
+    cars: ["Porsche 911 Carrera", "Audi RS6 Avant"],
+    lastVisit: "2026-05-14",
+    totalSpent: 6840,
+    vipStatus: "VIP",
+  },
+  {
+    id: "monika-kazlauske",
+    name: "Monika Kazlauske",
+    phone: "+370 699 12045",
+    cars: ["BMW M4 Competition"],
+    lastVisit: "2026-05-11",
+    totalSpent: 3120,
+    vipStatus: "VIP",
+  },
+  {
+    id: "uab-nordline",
+    name: "UAB Nordline",
+    phone: "+370 687 77031",
+    cars: ["Mercedes-Benz S-Class", "Range Rover Sport", "Tesla Model S"],
+    lastVisit: "2026-05-09",
+    totalSpent: 9280,
+    vipStatus: "VIP",
+  },
+  {
+    id: "tomas-janulis",
+    name: "Tomas Janulis",
+    phone: "+370 645 34109",
+    cars: ["Volkswagen Touareg"],
+    lastVisit: "2026-04-29",
+    totalSpent: 870,
+    vipStatus: "Standard",
+  },
+  {
+    id: "ruta-vaitkute",
+    name: "Ruta Vaitkute",
+    phone: "+370 620 88433",
+    cars: ["Volvo XC90"],
+    lastVisit: "2026-04-18",
+    totalSpent: 1440,
+    vipStatus: "Standard",
+  },
+  {
+    id: "mantas-zukauskas",
+    name: "Mantas Zukauskas",
+    phone: "+370 674 99018",
+    cars: ["Audi Q8", "Porsche Cayenne"],
+    lastVisit: "2026-04-12",
+    totalSpent: 4210,
+    vipStatus: "VIP",
+  },
+  {
+    id: "ievos-auto",
+    name: "Ievos Auto",
+    phone: "+370 655 77880",
+    cars: ["Lexus RX"],
+    lastVisit: "2026-03-30",
+    totalSpent: 760,
+    vipStatus: "Standard",
+  },
+  {
+    id: "darius-malinauskas",
+    name: "Darius Malinauskas",
+    phone: "+370 611 00234",
+    cars: ["Mercedes-AMG GT"],
+    lastVisit: "2026-03-24",
+    totalSpent: 2790,
+    vipStatus: "Standard",
+  },
+];
