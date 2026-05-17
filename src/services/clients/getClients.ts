@@ -40,6 +40,14 @@ type ClientCarRow = {
     updated_at: string | null
 }
 
+export type CreateClientInput = {
+    full_name: string
+    phone: string
+    email?: string | null
+    instagram?: string | null
+    vip_status: boolean
+}
+
 function formatContactMethod(
     value: ClientRow['preferred_contact_method'],
 ): ClientPreferences['contactMethod'] {
@@ -179,4 +187,24 @@ export async function getClientProfile(id: string): Promise<ClientProfile | null
     }
 
     return data ? mapClientProfile(data as ClientRow) : null
+}
+
+export async function createClient(input: CreateClientInput): Promise<Client> {
+    const { data, error } = await supabase
+        .from('clients')
+        .insert({
+            full_name: input.full_name,
+            phone: input.phone,
+            email: input.email || null,
+            instagram: input.instagram || null,
+            vip_status: input.vip_status,
+        })
+        .select('*, vehicles:cars(id, brand, model)')
+        .single()
+
+    if (error) {
+        throw new Error(error.message)
+    }
+
+    return mapClientRow(data as ClientRow)
 }
