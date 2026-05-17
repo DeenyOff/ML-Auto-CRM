@@ -68,9 +68,9 @@ export function CarsTab({ client }: CarsTabProps) {
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase text-zinc-500">Next service</p>
+              <p className="text-xs uppercase text-zinc-500">Last service</p>
               <p className="mt-1 text-sm font-medium text-zinc-100">
-                {dateFormatter.format(new Date(vehicle.nextServiceDue))}
+                {dateFormatter.format(new Date(vehicle.lastServiceDate))}
               </p>
             </div>
           </CardContent>

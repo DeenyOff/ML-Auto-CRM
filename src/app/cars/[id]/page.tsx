@@ -9,7 +9,7 @@ import {
   dateFormatter,
   mileageFormatter,
 } from "@/features/cars/components/car-formatters";
-import { cars } from "@/features/cars/data/cars";
+import { getCar } from "@/services/cars/getCars";
 
 type CarProfileRouteProps = {
   params: Promise<{
@@ -19,7 +19,7 @@ type CarProfileRouteProps = {
 
 export default async function CarProfileRoute({ params }: CarProfileRouteProps) {
   const { id } = await params;
-  const car = cars.find((item) => item.id === id);
+  const car = await getCar(id);
 
   if (!car) {
     notFound();

@@ -7,7 +7,6 @@ import { DataTable } from "@/components/table/data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { CarMobileCard } from "@/features/cars/components/car-mobile-card";
-import { cars } from "@/features/cars/data/cars";
 import { useCarsTable } from "@/features/cars/hooks/use-cars-table";
 import type { Car, CarServiceStatus } from "@/features/cars/types/car";
 
@@ -19,10 +18,18 @@ const statuses: Array<"all" | CarServiceStatus> = [
   "Follow-up",
 ];
 
-const years = ["all", "2024", "2023", "2022", "2021", "2020"] as const;
+type CarsPageProps = {
+  cars: Car[];
+};
 
-export function CarsPage() {
+export function CarsPage({ cars }: CarsPageProps) {
   const router = useRouter();
+  const years = [
+    "all",
+    ...Array.from(new Set(cars.map((car) => String(car.year)))).sort(
+      (yearA, yearB) => Number(yearB) - Number(yearA),
+    ),
+  ];
   const {
     table,
     globalFilter,
@@ -93,7 +100,7 @@ export function CarsPage() {
               <select
                 value={yearFilter}
                 onChange={(event) =>
-                  setYearFilter(event.target.value as typeof years[number])
+                  setYearFilter(event.target.value)
                 }
                 className="h-10 rounded-lg border border-white/10 bg-[#111] px-3 text-sm text-white outline-none transition-colors focus:border-red-500/60 focus:ring-2 focus:ring-red-500/20"
                 aria-label="Filter by vehicle year"
@@ -109,8 +116,12 @@ export function CarsPage() {
           <CardContent className="space-y-4">
             <DataTable
               table={table}
-              emptyTitle="No vehicles found"
-              emptyDescription="Adjust search or filters to find matching ML Auto vehicle records."
+              emptyTitle={cars.length ? "No vehicles found" : "No vehicles yet"}
+              emptyDescription={
+                cars.length
+                  ? "Adjust search or filters to find matching ML Auto vehicle records."
+                  : "Vehicle records from Supabase will appear here once they are added."
+              }
               getRowHref={(car) => `/cars/${car.id}`}
               onRowClick={(car) => router.push(`/cars/${car.id}`)}
               renderMobileCard={(car) => <CarMobileCard car={car as Car} />}

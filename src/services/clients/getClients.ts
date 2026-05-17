@@ -4,6 +4,7 @@ import type {
     ClientNote,
     ClientPreferences,
     ClientProfile,
+    ClientVehicle,
 } from '@/features/clients/types/client'
 
 type ClientRow = {
@@ -20,6 +21,21 @@ type ClientRow = {
     total_spent: number | null
     last_visit: string | null
     notes_summary: string | null
+    created_at: string | null
+    updated_at: string | null
+    vehicles?: ClientCarRow[] | null
+}
+
+type ClientCarRow = {
+    id: string
+    brand: string | null
+    model: string | null
+    year: number | null
+    vin: string | null
+    color: string | null
+    mileage: number | null
+    plate_number: string | null
+    last_service_date: string | null
     created_at: string | null
     updated_at: string | null
 }
@@ -48,19 +64,41 @@ function getInitials(name: string) {
 }
 
 function mapClientRow(row: ClientRow): Client {
+    const vehicles = row.vehicles ?? []
+
     return {
         id: row.id,
         name: row.full_name ?? 'Unnamed client',
         phone: row.phone ?? 'Not recorded',
-        cars: [],
+        cars: vehicles.map(formatVehicleName),
         lastVisit: row.last_visit ?? row.updated_at ?? row.created_at ?? new Date(0).toISOString(),
         totalSpent: row.total_spent ?? 0,
         vipStatus: row.vip_status ? 'VIP' : 'Standard',
     }
 }
 
+function formatVehicleName(vehicle: ClientCarRow) {
+    return [vehicle.brand, vehicle.model].filter(Boolean).join(' ') || 'Unnamed vehicle'
+}
+
+function mapClientVehicle(row: ClientCarRow): ClientVehicle {
+    return {
+        id: row.id,
+        brand: row.brand ?? 'Unknown brand',
+        model: row.model ?? 'Unknown model',
+        year: row.year ?? 0,
+        vin: row.vin ?? 'Not recorded',
+        color: row.color ?? 'Not recorded',
+        mileage: row.mileage ?? 0,
+        plateNumber: row.plate_number ?? 'Not recorded',
+        lastServiceDate:
+            row.last_service_date ?? row.updated_at ?? row.created_at ?? new Date(0).toISOString(),
+    }
+}
+
 function mapClientProfile(row: ClientRow): ClientProfile {
     const client = mapClientRow(row)
+    const vehicles = (row.vehicles ?? []).map(mapClientVehicle)
     const tags = row.tags?.filter(Boolean) ?? []
     const notes: ClientNote[] = row.notes_summary
         ? [
@@ -85,11 +123,11 @@ function mapClientProfile(row: ClientRow): ClientProfile {
         tags,
         stats: {
             bookings: 0,
-            vehicles: 0,
+            vehicles: vehicles.length,
             averageTicket: 0,
             loyaltyScore: row.vip_status ? 100 : 0,
         },
-        vehicles: [],
+        vehicles,
         history: [],
         preferences: {
             contactMethod: formatContactMethod(row.preferred_contact_method),
@@ -119,7 +157,7 @@ function mapClientProfile(row: ClientRow): ClientProfile {
 export async function getClients(): Promise<Client[]> {
     const { data, error } = await supabase
         .from('clients')
-        .select('*')
+        .select('*, vehicles:cars(id, brand, model)')
         .order('last_visit', { ascending: false, nullsFirst: false })
 
     if (error) {
@@ -132,7 +170,7 @@ export async function getClients(): Promise<Client[]> {
 export async function getClientProfile(id: string): Promise<ClientProfile | null> {
     const { data, error } = await supabase
         .from('clients')
-        .select('*')
+        .select('*, vehicles:cars(*)')
         .eq('id', id)
         .maybeSingle()
 

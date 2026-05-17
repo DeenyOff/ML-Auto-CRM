@@ -15,7 +15,7 @@ import { carColumns } from "@/features/cars/components/car-table-columns";
 import type { Car, CarServiceStatus } from "@/features/cars/types/car";
 
 type StatusFilter = "all" | CarServiceStatus;
-type YearFilter = "all" | "2024" | "2023" | "2022" | "2021" | "2020";
+type YearFilter = "all" | string;
 
 export function useCarsTable(data: Car[]) {
   const [globalFilter, setGlobalFilter] = useState("");

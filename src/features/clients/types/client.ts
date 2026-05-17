@@ -22,7 +22,7 @@ export type ClientVehicle = {
   color: string;
   mileage: number;
   plateNumber: string;
-  nextServiceDue: string;
+  lastServiceDate: string;
 };
 
 export type ServiceHistoryStatus =
