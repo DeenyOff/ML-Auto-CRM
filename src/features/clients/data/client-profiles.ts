@@ -3,7 +3,7 @@ import { clients } from "@/features/clients/data/clients";
 
 export const clientProfiles: ClientProfile[] = [
   {
-    id: "andrius-petrauskas",
+    id: "fc567438-cc5a-4ac6-9954-e634cf836297",
     name: "Andrius Petrauskas",
     initials: "AP",
     phone: "+370 612 44011",

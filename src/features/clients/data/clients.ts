@@ -2,9 +2,6 @@ import type { Client } from "@/features/clients/types/client";
 import { getClients } from "@/services/clients/getClients";
 
 
-const  clientss = getClients();
-
-
 export const clients: Client[] = [
   {
     id: "andrius-petrauskas",
