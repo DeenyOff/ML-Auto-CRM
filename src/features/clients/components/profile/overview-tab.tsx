@@ -58,11 +58,15 @@ export function OverviewTab({ client }: OverviewTabProps) {
             <CardTitle className="text-base text-white">Tags</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            {client.tags.map((tag) => (
-              <Badge key={tag} variant="muted">
-                {tag}
-              </Badge>
-            ))}
+            {client.tags.length ? (
+              client.tags.map((tag) => (
+                <Badge key={tag} variant="muted">
+                  {tag}
+                </Badge>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500">No tags recorded.</p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -96,22 +100,28 @@ export function OverviewTab({ client }: OverviewTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {client.recentActivity.map((activity) => (
-              <article
-                key={activity.id}
-                className="border-l border-red-500/50 pl-4"
-              >
-                <time className="text-xs text-red-300">
-                  {dateFormatter.format(new Date(activity.date))}
-                </time>
-                <h3 className="mt-1 font-medium text-white">
-                  {activity.title}
-                </h3>
-                <p className="mt-1 text-sm text-zinc-500">
-                  {activity.description}
-                </p>
-              </article>
-            ))}
+            {client.recentActivity.length ? (
+              client.recentActivity.map((activity) => (
+                <article
+                  key={activity.id}
+                  className="border-l border-red-500/50 pl-4"
+                >
+                  <time className="text-xs text-red-300">
+                    {dateFormatter.format(new Date(activity.date))}
+                  </time>
+                  <h3 className="mt-1 font-medium text-white">
+                    {activity.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    {activity.description}
+                  </p>
+                </article>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500">
+                No recent activity recorded.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

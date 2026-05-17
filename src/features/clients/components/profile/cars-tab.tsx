@@ -10,6 +10,22 @@ type CarsTabProps = {
 };
 
 export function CarsTab({ client }: CarsTabProps) {
+  if (!client.vehicles.length) {
+    return (
+      <Card>
+        <CardContent className="px-6 py-14 text-center">
+          <h2 className="text-base font-semibold text-white">
+            No vehicles recorded
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
+            Vehicle records from Supabase will appear here once they are linked
+            to this client.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {client.vehicles.map((vehicle) => (

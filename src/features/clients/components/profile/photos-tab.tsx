@@ -8,6 +8,27 @@ type PhotosTabProps = {
 };
 
 export function PhotosTab({ client }: PhotosTabProps) {
+  if (!client.photos.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base text-white">Photo Gallery</CardTitle>
+          <p className="text-sm text-zinc-500">
+            Before and after records for client approval and service history.
+          </p>
+        </CardHeader>
+        <CardContent className="px-6 py-14 text-center">
+          <h2 className="text-base font-semibold text-white">
+            No photos recorded
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
+            Service photos from Supabase will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>

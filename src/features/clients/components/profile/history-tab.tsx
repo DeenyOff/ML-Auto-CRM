@@ -22,6 +22,29 @@ const statusVariant: Record<ServiceHistoryStatus, "default" | "success" | "muted
   };
 
 export function HistoryTab({ client }: HistoryTabProps) {
+  if (!client.history.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base text-white">
+            Service History
+          </CardTitle>
+          <p className="text-sm text-zinc-500">
+            Timeline of premium detailing services, pricing, and studio status.
+          </p>
+        </CardHeader>
+        <CardContent className="px-6 py-14 text-center">
+          <h2 className="text-base font-semibold text-white">
+            No service history recorded
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
+            Completed and scheduled services from Supabase will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>

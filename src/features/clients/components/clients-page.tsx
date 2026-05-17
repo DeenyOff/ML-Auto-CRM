@@ -7,13 +7,9 @@ import { DataTable } from "@/components/table/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { clients } from "@/features/clients/data/clients";
 import { dateFormatter } from "@/features/clients/components/client-table-columns";
 import { useClientsTable } from "@/features/clients/hooks/use-clients-table";
-// import type { Client } from "@/features/clients/types/client";
-import { useEffect, useState } from "react";
-import { getClients } from "@/services/clients/getClients";
-import {Client} from "@/features/clients/types/client";
+import type { Client } from "@/features/clients/types/client";
 
 
 function ClientMobileCard({ client }: { client: Client }) {
@@ -53,46 +49,14 @@ function ClientMobileCard({ client }: { client: Client }) {
   );
 }
 
-export function ClientsPage() {
+type ClientsPageProps = {
+  clients: Client[];
+};
+
+export function ClientsPage({ clients }: ClientsPageProps) {
   const router = useRouter();
-  const [clients, setClients] = useState<Client[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadClients() {
-      try {
-        const data = await getClients();
-
-        const formattedClients: Client[] = (data || []).map((client) => ({
-          id: client.id,
-          name: client.full_name,
-          phone: client.phone || "",
-          cars: [],
-          lastVisit: client.last_visit || new Date().toISOString(),
-          totalSpent: client.total_spent || 0,
-          vipStatus: client.vip_status ? "VIP" : "Standard",
-        }));
-
-        setClients(formattedClients);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadClients();
-  }, []);
   const { table, globalFilter, setGlobalFilter, vipFilter, setVipFilter } =
     useClientsTable(clients);
-
-  if (loading) {
-    return (
-        <AppShell title="Clients" eyebrow="Client Management">
-          <div className="p-6 text-white">Loading...</div>
-        </AppShell>
-    );
-  }
 
   return (
     <AppShell title="Clients" eyebrow="Client Management">
@@ -154,8 +118,12 @@ export function ClientsPage() {
           <CardContent className="space-y-4">
             <DataTable
               table={table}
-              emptyTitle="No clients found"
-              emptyDescription="Adjust the search query or filter to find matching ML Auto client records."
+              emptyTitle={clients.length ? "No clients found" : "No clients yet"}
+              emptyDescription={
+                clients.length
+                  ? "Adjust the search query or filter to find matching ML Auto client records."
+                  : "Client records from Supabase will appear here once they are added."
+              }
               getRowHref={(client) => `/clients/${client.id}`}
               onRowClick={(client) => router.push(`/clients/${client.id}`)}
               renderMobileCard={(client) => (

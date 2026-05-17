@@ -11,12 +11,7 @@ export type Client = {
 };
 
 export type ClientTag =
-  | "Ceramic"
-  | "Fleet"
-  | "Paint correction"
-  | "Priority"
-  | "Seasonal storage"
-  | "Sport interior";
+  string;
 
 export type ClientVehicle = {
   id: string;
@@ -55,7 +50,7 @@ export type ClientActivityItem = {
 };
 
 export type ClientPreferences = {
-  contactMethod: "Phone" | "Email" | "SMS";
+  contactMethod: "Phone" | "Email" | "SMS" | "Instagram" | "Not recorded";
   pickupWindow: string;
   invoicePreference: string;
   waitingArea: string;

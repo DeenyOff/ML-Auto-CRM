@@ -7,6 +7,27 @@ type NotesTabProps = {
 };
 
 export function NotesTab({ client }: NotesTabProps) {
+  if (!client.notes.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base text-white">Employee Notes</CardTitle>
+          <p className="text-sm text-zinc-500">
+            Internal service observations and relationship context.
+          </p>
+        </CardHeader>
+        <CardContent className="px-6 py-14 text-center">
+          <h2 className="text-base font-semibold text-white">
+            No notes recorded
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
+            Client notes from Supabase will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>

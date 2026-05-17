@@ -43,14 +43,20 @@ export function PreferencesTab({ client }: PreferencesTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {client.preferences.specialInstructions.map((instruction) => (
-              <div
-                key={instruction}
-                className="rounded-lg border border-red-500/20 bg-red-500/[0.06] p-4 text-sm text-red-50"
-              >
-                {instruction}
-              </div>
-            ))}
+            {client.preferences.specialInstructions.length ? (
+              client.preferences.specialInstructions.map((instruction) => (
+                <div
+                  key={instruction}
+                  className="rounded-lg border border-red-500/20 bg-red-500/[0.06] p-4 text-sm text-red-50"
+                >
+                  {instruction}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500">
+                No special instructions recorded.
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -61,11 +67,17 @@ export function PreferencesTab({ client }: PreferencesTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            {client.preferences.favoriteServices.map((service) => (
-              <Badge key={service} variant="default">
-                {service}
-              </Badge>
-            ))}
+            {client.preferences.favoriteServices.length ? (
+              client.preferences.favoriteServices.map((service) => (
+                <Badge key={service} variant="default">
+                  {service}
+                </Badge>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-500">
+                No favorite services recorded.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
