@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
-import type { CreateClientInput } from "@/services/clients/getClients";
+import type { UpdateClientInput } from "@/services/clients/getClients";
 
 const optionalEmail = z
   .string()
@@ -24,15 +24,20 @@ const clientFormSchema = z.object({
   email: optionalEmail,
   instagram: z.string().trim().optional().or(z.literal("")),
   vip_status: z.boolean(),
+  special_requests: z.string().trim().optional().or(z.literal("")),
 });
 
 export type ClientFormValues = z.infer<typeof clientFormSchema>;
 
 type ClientFormProps = {
+  defaultValues?: Partial<ClientFormValues>;
   error?: string | null;
+  includeSpecialRequests?: boolean;
   isSubmitting?: boolean;
   onCancel: () => void;
-  onSubmit: (values: CreateClientInput) => Promise<void>;
+  onSubmit: (values: UpdateClientInput) => Promise<void>;
+  submitLabel?: string;
+  submittingLabel?: string;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -44,10 +49,14 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function ClientForm({
+  defaultValues,
   error,
+  includeSpecialRequests = false,
   isSubmitting = false,
   onCancel,
   onSubmit,
+  submitLabel = "Create client",
+  submittingLabel = "Creating...",
 }: ClientFormProps) {
   const {
     formState: { errors },
@@ -61,6 +70,8 @@ export function ClientForm({
       email: "",
       instagram: "",
       vip_status: false,
+      special_requests: "",
+      ...defaultValues,
     },
   });
 
@@ -72,6 +83,7 @@ export function ClientForm({
           ...values,
           email: values.email || null,
           instagram: values.instagram || null,
+          special_requests: values.special_requests || null,
         });
       })}
     >
@@ -138,6 +150,22 @@ export function ClientForm({
         VIP client
       </label>
 
+      {includeSpecialRequests && (
+        <div>
+          <label
+            className="text-sm font-medium text-zinc-200"
+            htmlFor="special_requests"
+          >
+            Special requests
+          </label>
+          <Input
+            id="special_requests"
+            disabled={isSubmitting}
+            {...register("special_requests")}
+          />
+        </div>
+      )}
+
       {error && (
         <div className="rounded-lg border border-red-500/20 bg-red-500/[0.08] p-3 text-sm text-red-100">
           {error}
@@ -154,7 +182,7 @@ export function ClientForm({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create client"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </DialogFooter>
     </form>

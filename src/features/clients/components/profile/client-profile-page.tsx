@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { Button } from "@/components/ui/button";
+import { ClientEditDialog } from "@/features/clients/components/profile/client-edit-dialog";
 import { ClientProfileHeader } from "@/features/clients/components/profile/client-profile-header";
 import { ClientProfileTabs } from "@/features/clients/components/profile/client-profile-tabs";
 import { ClientQuickActions } from "@/features/clients/components/profile/client-quick-actions";
@@ -23,9 +24,12 @@ export function ClientProfilePage({ client, employees }: ClientProfilePageProps)
               Back to clients
             </Button>
           </Link>
-          <span className="hidden text-sm text-zinc-500 sm:inline">
-            Profile ID: {client.id}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm text-zinc-500 sm:inline">
+              Profile ID: {client.id}
+            </span>
+            <ClientEditDialog client={client} />
+          </div>
         </div>
 
         <ClientProfileHeader client={client} />

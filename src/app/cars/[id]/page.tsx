@@ -10,6 +10,8 @@ import {
   mileageFormatter,
 } from "@/features/cars/components/car-formatters";
 import { getCar } from "@/services/cars/getCars";
+import { CarEditDialog } from "@/features/cars/components/car-edit-dialog";
+import { getClients } from "@/services/clients/getClients";
 
 type CarProfileRouteProps = {
   params: Promise<{
@@ -19,7 +21,10 @@ type CarProfileRouteProps = {
 
 export default async function CarProfileRoute({ params }: CarProfileRouteProps) {
   const { id } = await params;
-  const car = await getCar(id);
+  const [car, clients] = await Promise.all([
+    getCar(id),
+    getClients(),
+  ]);
 
   if (!car) {
     notFound();
@@ -36,6 +41,11 @@ export default async function CarProfileRoute({ params }: CarProfileRouteProps) 
             Back to cars
           </Button>
         </Link>
+
+        <CarEditDialog
+            car={car}
+            clients={clients}
+        />
 
         <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(135deg,rgba(24,24,27,0.96),rgba(9,9,11,0.92)),url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
           <div className="bg-black/55">

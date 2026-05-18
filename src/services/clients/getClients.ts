@@ -48,6 +48,10 @@ export type CreateClientInput = {
     vip_status: boolean
 }
 
+export type UpdateClientInput = CreateClientInput & {
+    special_requests?: string | null
+}
+
 function formatContactMethod(
     value: ClientRow['preferred_contact_method'],
 ): ClientPreferences['contactMethod'] {
@@ -125,6 +129,8 @@ function mapClientProfile(row: ClientRow): ClientProfile {
     return {
         ...client,
         email: row.email ?? 'Not recorded',
+        instagram: row.instagram ?? '',
+        specialRequests: row.special_requests ?? '',
         initials: getInitials(client.name).toUpperCase(),
         address: 'Not recorded',
         joinedAt: row.created_at ?? client.lastVisit,
@@ -207,4 +213,29 @@ export async function createClient(input: CreateClientInput): Promise<Client> {
     }
 
     return mapClientRow(data as ClientRow)
+}
+
+export async function updateClient(
+    id: string,
+    input: UpdateClientInput,
+): Promise<ClientProfile> {
+    const { data, error } = await supabase
+        .from('clients')
+        .update({
+            full_name: input.full_name,
+            phone: input.phone,
+            email: input.email || null,
+            instagram: input.instagram || null,
+            vip_status: input.vip_status,
+            special_requests: input.special_requests || null,
+        })
+        .eq('id', id)
+        .select('*, vehicles:cars(*)')
+        .single()
+
+    if (error) {
+        throw new Error(error.message)
+    }
+
+    return mapClientProfile(data as ClientRow)
 }

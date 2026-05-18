@@ -16,6 +16,7 @@ import type {
   CreateBookingInput,
 } from "@/services/bookings/getBookings";
 
+
 const bookingFormSchema = z.object({
   client_id: z.string().trim().min(1, "Client is required."),
   car_id: z.string().trim().min(1, "Vehicle is required."),

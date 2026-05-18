@@ -38,6 +38,9 @@ type VehicleFormProps = {
   isSubmitting?: boolean;
   onCancel: () => void;
   onSubmit: (values: CreateCarInput) => Promise<void>;
+  defaultValues?: Partial<CreateCarInput>;
+  submitLabel?: string;
+  submittingLabel?: string;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -49,12 +52,15 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function VehicleForm({
-  clients,
-  defaultClientId = "",
-  error,
-  isSubmitting = false,
-  onCancel,
-  onSubmit,
+                              clients,
+                              defaultClientId = "",
+                              error,
+                              isSubmitting = false,
+                              onCancel,
+                              onSubmit,
+                              defaultValues,
+                              submitLabel = "Create vehicle",
+                              submittingLabel = "Creating...",
 }: VehicleFormProps) {
   const {
     formState: { errors },
@@ -71,6 +77,7 @@ export function VehicleForm({
       color: "",
       mileage: 0,
       client_id: defaultClientId,
+      ...defaultValues,
     },
   });
 
@@ -216,7 +223,7 @@ export function VehicleForm({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting || !clients.length}>
-          {isSubmitting ? "Creating..." : "Create vehicle"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </DialogFooter>
     </form>

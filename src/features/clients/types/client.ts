@@ -79,6 +79,8 @@ export type ClientPhoto = {
 
 export type ClientProfile = Client & {
   email: string;
+  instagram: string;
+  specialRequests: string;
   initials: string;
   address: string;
   joinedAt: string;
