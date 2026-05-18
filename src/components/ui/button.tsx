@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "default" | "ghost" | "outline";
+type ButtonVariant = "default" | "destructive" | "ghost" | "outline";
 type ButtonSize = "default" | "icon" | "sm";
 
 export interface ButtonProps
@@ -13,6 +13,8 @@ export interface ButtonProps
 
 const variantClasses: Record<ButtonVariant, string> = {
   default:
+    "bg-red-600 text-white shadow-[0_12px_30px_rgba(220,38,38,0.22)] hover:bg-red-500",
+  destructive:
     "bg-red-600 text-white shadow-[0_12px_30px_rgba(220,38,38,0.22)] hover:bg-red-500",
   ghost: "text-zinc-300 hover:bg-white/[0.06] hover:text-white",
   outline:

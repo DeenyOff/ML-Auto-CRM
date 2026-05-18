@@ -17,6 +17,7 @@ import {
 } from "@/services/bookings/getBookings";
 
 import { BookingEditDialog } from "@/features/bookings/components/booking-edit-dialog";
+import { BookingDeleteDialog } from "@/features/bookings/components/booking-delete-dialog";
 
 type BookingDetailsRouteProps = {
   params: Promise<{
@@ -57,12 +58,15 @@ export default async function BookingDetailsRoute({
             Back to bookings
           </Button>
         </Link>
-        <BookingEditDialog
-            booking={booking}
-            clients={clients}
-            vehicles={vehicles}
-            employees={employees}
-        />
+        <div className="flex flex-wrap gap-3">
+          <BookingEditDialog
+              booking={booking}
+              clients={clients}
+              vehicles={vehicles}
+              employees={employees}
+          />
+          <BookingDeleteDialog booking={booking} />
+        </div>
 
         <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(135deg,rgba(24,24,27,0.96),rgba(9,9,11,0.92)),url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
           <div className="bg-black/55">
