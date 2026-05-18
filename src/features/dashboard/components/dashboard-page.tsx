@@ -5,63 +5,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { DashboardData } from "@/services/dashboard/getDashboard";
 
-const metrics = [
-  {
-    label: "Active Clients",
-    value: "248",
-    trend: "+12 this month",
-  },
-  {
-    label: "Cars Managed",
-    value: "392",
-    trend: "+31 new records",
-  },
-  {
-    label: "Bookings",
-    value: "46",
-    trend: "18 pending",
-  },
-  {
-    label: "Revenue Pipeline",
-    value: "€34.8k",
-    trend: "+8.4% projected",
-  },
-];
+type DashboardPageProps = {
+  data: DashboardData;
+  error?: string | null;
+};
 
-const schedule = [
-  {
-    time: "09:00",
-    client: "A. Petrauskas",
-    vehicle: "Porsche 911 Carrera",
-    service: "Ceramic coating inspection",
-  },
-  {
-    time: "11:30",
-    client: "UAB Nordline",
-    vehicle: "Mercedes-Benz S-Class",
-    service: "Interior detailing",
-  },
-  {
-    time: "15:00",
-    client: "M. Kazlauskas",
-    vehicle: "BMW M4 Competition",
-    service: "Paint correction",
-  },
-];
-
-const vehicleStatus = [
-  { label: "In detailing", value: 14 },
-  { label: "Awaiting pickup", value: 7 },
-  { label: "Follow-up due", value: 11 },
-];
-
-export function DashboardPage() {
+export function DashboardPage({ data, error }: DashboardPageProps) {
   return (
     <AppShell title="Dashboard" eyebrow="Premium CRM">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        {error ? (
+          <Card>
+            <CardContent className="p-5">
+              <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                {error}
+              </p>
+            </CardContent>
+          </Card>
+        ) : null}
+
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {metrics.map((metric) => (
+          {data.metrics.map((metric) => (
             <Card
               key={metric.label}
               className="transition-all duration-200 hover:-translate-y-0.5 hover:border-red-500/40 hover:bg-zinc-900/80"
@@ -95,27 +61,33 @@ export function DashboardPage() {
               </span>
             </CardHeader>
             <CardContent className="space-y-3">
-              {schedule.map((booking) => (
-                <article
-                  key={`${booking.time}-${booking.vehicle}`}
-                  className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-4 transition-colors duration-200 hover:border-red-500/40 hover:bg-red-500/[0.04] sm:grid-cols-[72px_1fr]"
-                >
-                  <time className="text-sm font-semibold text-red-300">
-                    {booking.time}
-                  </time>
-                  <div>
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <h2 className="font-medium text-white">
-                        {booking.vehicle}
-                      </h2>
-                      <p className="text-sm text-zinc-500">{booking.client}</p>
+              {data.recentBookings.length ? (
+                data.recentBookings.map((booking) => (
+                  <article
+                    key={booking.id}
+                    className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-4 transition-colors duration-200 hover:border-red-500/40 hover:bg-red-500/[0.04] sm:grid-cols-[72px_1fr]"
+                  >
+                    <time className="text-sm font-semibold text-red-300">
+                      {booking.time}
+                    </time>
+                    <div>
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="font-medium text-white">
+                          {booking.vehicle}
+                        </h2>
+                        <p className="text-sm text-zinc-500">{booking.client}</p>
+                      </div>
+                      <p className="mt-1 text-sm text-zinc-400">
+                        {booking.service}
+                      </p>
                     </div>
-                    <p className="mt-1 text-sm text-zinc-400">
-                      {booking.service}
-                    </p>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-500">
+                  No bookings have been recorded yet.
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -129,20 +101,26 @@ export function DashboardPage() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {vehicleStatus.map((item) => (
-                <div key={item.label} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-300">{item.label}</span>
-                    <span className="font-medium text-white">{item.value}</span>
+              {data.bookingStatuses.length ? (
+                data.bookingStatuses.map((item) => (
+                  <div key={item.label} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-zinc-300">{item.label}</span>
+                      <span className="font-medium text-white">{item.value}</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-red-600 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
+                        style={{ width: `${Math.min(item.value * 5, 100)}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 rounded-full bg-white/10">
-                    <div
-                      className="h-full rounded-full bg-red-600 shadow-[0_0_18px_rgba(220,38,38,0.45)]"
-                      style={{ width: `${Math.min(item.value * 5, 100)}%` }}
-                    />
-                  </div>
+                ))
+              ) : (
+                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-500">
+                  No booking statuses are available yet.
                 </div>
-              ))}
+              )}
             </CardContent>
           </Card>
         </section>
