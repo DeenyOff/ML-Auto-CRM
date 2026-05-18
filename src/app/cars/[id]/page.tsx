@@ -11,6 +11,7 @@ import {
 } from "@/features/cars/components/car-formatters";
 import { getCar } from "@/services/cars/getCars";
 import { CarEditDialog } from "@/features/cars/components/car-edit-dialog";
+import { CarDeleteDialog } from "@/features/cars/components/car-delete-dialog";
 import { getClients } from "@/services/clients/getClients";
 
 type CarProfileRouteProps = {
@@ -42,10 +43,13 @@ export default async function CarProfileRoute({ params }: CarProfileRouteProps) 
           </Button>
         </Link>
 
-        <CarEditDialog
-            car={car}
-            clients={clients}
-        />
+        <div className="flex flex-wrap gap-3">
+          <CarEditDialog
+              car={car}
+              clients={clients}
+          />
+          <CarDeleteDialog car={car} />
+        </div>
 
         <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(135deg,rgba(24,24,27,0.96),rgba(9,9,11,0.92)),url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
           <div className="bg-black/55">
