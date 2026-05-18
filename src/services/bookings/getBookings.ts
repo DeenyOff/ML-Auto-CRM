@@ -227,3 +227,40 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
 
   return mapBookingRow(data as BookingRow);
 }
+
+export async function getBookingClients(): Promise<BookingClientOption[]> {
+  const { data, error } = await supabase
+      .from("clients")
+      .select("id, full_name")
+      .order("full_name", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []).map((client) => ({
+    id: client.id,
+    name: client.full_name ?? "Unnamed client",
+  }));
+}
+
+export async function getBookingVehicles(): Promise<BookingVehicleOption[]> {
+  const { data, error } = await supabase
+      .from("cars")
+      .select("id, client_id, brand, model, plate_number")
+      .order("brand", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []).map((car) => ({
+    id: car.id,
+    clientId: car.client_id ?? "",
+    name:
+        [car.brand, car.model]
+            .filter(Boolean)
+            .join(" ") || "Unnamed vehicle",
+    plateNumber: car.plate_number ?? "No plate",
+  }));
+}

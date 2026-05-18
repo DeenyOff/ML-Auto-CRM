@@ -10,6 +10,13 @@ import {
 } from "@/features/bookings/components/booking-formatters";
 import { BookingStatusBadge } from "@/features/bookings/components/booking-status-badge";
 import { getBooking } from "@/services/bookings/getBookings";
+import {
+  getBookingClients,
+  getBookingEmployees,
+  getBookingVehicles,
+} from "@/services/bookings/getBookings";
+
+import { BookingEditDialog } from "@/features/bookings/components/booking-edit-dialog";
 
 type BookingDetailsRouteProps = {
   params: Promise<{
@@ -30,7 +37,13 @@ export default async function BookingDetailsRoute({
   params,
 }: BookingDetailsRouteProps) {
   const { id } = await params;
-  const booking = await getBooking(id);
+  const [booking, clients, vehicles, employees] =
+      await Promise.all([
+        getBooking(id),
+        getBookingClients(),
+        getBookingVehicles(),
+        getBookingEmployees(),
+      ]);
 
   if (!booking) {
     notFound();
@@ -44,6 +57,12 @@ export default async function BookingDetailsRoute({
             Back to bookings
           </Button>
         </Link>
+        <BookingEditDialog
+            booking={booking}
+            clients={clients}
+            vehicles={vehicles}
+            employees={employees}
+        />
 
         <Card className="overflow-hidden border-red-500/20 bg-[linear-gradient(135deg,rgba(24,24,27,0.96),rgba(9,9,11,0.92)),url('https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
           <div className="bg-black/55">

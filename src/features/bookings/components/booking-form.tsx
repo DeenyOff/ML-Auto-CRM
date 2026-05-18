@@ -40,6 +40,9 @@ type BookingFormProps = {
   onCancel: () => void;
   onSubmit: (values: CreateBookingInput) => Promise<void>;
   vehicles: BookingVehicleOption[];
+  defaultValues?: Partial<CreateBookingInput>;
+  submitLabel?: string;
+  submittingLabel?: string;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -51,15 +54,18 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function BookingForm({
-  clients,
-  defaultCarId = "",
-  defaultClientId = "",
-  employees,
-  error,
-  isSubmitting = false,
-  onCancel,
-  onSubmit,
-  vehicles,
+                              clients,
+                              defaultCarId = "",
+                              defaultClientId = "",
+                              employees,
+                              error,
+                              isSubmitting = false,
+                              onCancel,
+                              onSubmit,
+                              vehicles,
+                              defaultValues,
+                              submitLabel = "Create booking",
+                              submittingLabel = "Creating...",
 }: BookingFormProps) {
   const {
     control,
@@ -76,6 +82,7 @@ export function BookingForm({
       status: "new",
       price: 0,
       notes: "",
+      ...defaultValues,
     },
   });
   const selectedClientId = useWatch({ control, name: "client_id" });
@@ -238,7 +245,7 @@ export function BookingForm({
           type="submit"
           disabled={isSubmitting || !clients.length || !vehicles.length || !employees.length}
         >
-          {isSubmitting ? "Creating..." : "Create booking"}
+          {isSubmitting ? submittingLabel : submitLabel}
         </Button>
       </DialogFooter>
     </form>
